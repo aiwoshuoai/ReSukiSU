@@ -5,6 +5,7 @@ import androidx.compose.material3.SnackbarData
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SwipeToDismissBox
+import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -36,6 +37,6 @@ fun SwipeableSnackbarHost(
     LaunchedEffect(hostState.currentSnackbarData) {
         if (hostState.currentSnackbarData == null) return@LaunchedEffect
 
-        state.reset()
+        state.snapTo(SwipeToDismissBoxValue.Settled)
     }
 }
