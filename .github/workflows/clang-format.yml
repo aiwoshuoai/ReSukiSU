@@ -1,4 +1,4 @@
-name: ClangFormat check
+name: ClangFormat 格式化检查 (ClangFormat check)
 
 on:
   push:
@@ -26,6 +26,6 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - name: check
+      - name: 检查 (check)
         working-directory: kernel
         run: make check-format

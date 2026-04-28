@@ -1,4 +1,4 @@
-name: Rustfmt check
+name: Rust 代码格式化检查 (Rustfmt check)
 
 on:
   push:

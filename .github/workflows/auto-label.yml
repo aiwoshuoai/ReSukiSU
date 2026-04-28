@@ -1,4 +1,4 @@
-name: Auto Label Issues
+name: 自动标记议题 (Auto Label Issues)
 on:
   issues:
     types: [opened, edited]

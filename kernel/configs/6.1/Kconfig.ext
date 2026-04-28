@@ -1,0 +1,8 @@
+# ReSukiSU 6.1 专属配置扩展
+
+config KSU_PATCH_61
+    bool "Enable Kernel 6.1 specific patches"
+    default y
+    depends on KSU
+    help
+      Enable specialized patches and fixes for Kernel 6.1.

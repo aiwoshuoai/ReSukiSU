@@ -1,4 +1,4 @@
-name: Build LKM for KernelSU
+name: 为 KernelSU 构建 LKM
 on:
   workflow_call:
     inputs:

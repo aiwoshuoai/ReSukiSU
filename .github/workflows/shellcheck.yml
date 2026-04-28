@@ -1,4 +1,4 @@
-name: ShellCheck
+name: ShellCheck 检查 (ShellCheck)
 
 on:
   push:
@@ -20,7 +20,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - name: Run ShellCheck
+      - name: 运行 ShellCheck (Run ShellCheck)
         uses: ludeeus/action-shellcheck@2.0.0
         with:
           ignore_names: gradlew

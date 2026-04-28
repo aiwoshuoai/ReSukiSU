@@ -1,4 +1,4 @@
-name: Release
+name: 发布
 on:
   push:
     tags:
@@ -14,9 +14,9 @@ jobs:
       - build-manager
     runs-on: ubuntu-latest
     steps:
-      - name: Download artifacts
+      - name: 下载产物 (Download artifacts)
         uses: actions/download-artifact@v8
-      - name: Rename ksud
+      - name: 重命名 ksud (Rename ksud)
         run: |
           mkdir -p ksud
           for dir in ./ksud-*; do
@@ -30,7 +30,7 @@ jobs:
                  done
               fi
           done
-      - name: Zip AnyKernel3
+      - name: 压缩 AnyKernel3 (Zip AnyKernel3)
         run: |
           for dir in AnyKernel3-*; do
             if [ -d "$dir" ]; then
@@ -39,7 +39,7 @@ jobs:
             fi
           done
 
-      - name: Zip WSA kernel
+      - name: 压缩 WSA 内核 (Zip WSA kernel)
         run: |
           for dir in kernel-WSA-*; do
             if [ -d "$dir" ]; then
@@ -48,7 +48,7 @@ jobs:
             fi
           done
 
-      - name: Zip ChromeOS ARCVM kernel
+      - name: 压缩 ChromeOS ARCVM 内核 (Zip ChromeOS ARCVM kernel)
         run: |
           for dir in kernel-ARCVM-*; do
             if [ -d "$dir" ]; then
@@ -57,10 +57,10 @@ jobs:
             fi
           done
 
-      - name: Display structure of downloaded files
+      - name: 显示下载文件的结构 (Display structure of downloaded files)
         run: ls -R
 
-      - name: release
+      - name: 发布 (release)
         uses: softprops/action-gh-release@v3
         with:
           files: |

@@ -1,4 +1,4 @@
-name: Build Manager
+name: 构建管理器
 
 on:
   workflow_dispatch:
@@ -36,7 +36,7 @@ jobs:
       keystore_password: ${{ steps.gen.outputs.keystore_password }}
       key_password: ${{ steps.gen.outputs.key_password }}
     steps:
-      - name: Generate temporary keystore
+      - name: 生成临时密钥库
         if: github.event_name == 'pull_request'
         id: gen
         run: |
@@ -57,7 +57,7 @@ jobs:
 
           echo "keystore=$(base64 -w 0 pr-key.jks)" >> $GITHUB_OUTPUT
 
-      - name: Extract certificate hash and size
+      - name: 提取证书哈希和大小
         if: github.event_name == 'pull_request'
         id: extract
         env:
@@ -129,12 +129,12 @@ jobs:
         working-directory: ./manager
 
     steps:
-      - name: Checkout
+      - name: 检出代码
         uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
-      - name: Determine commit for build
+      - name: 确定构建提交哈希
         id: commit
         run: |
           if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
@@ -143,7 +143,7 @@ jobs:
             echo "COMMIT_SHA=${{ github.sha }}" >> $GITHUB_OUTPUT
           fi
 
-      - name: Determine manager variant
+      - name: 确定管理器变体
         id: determine
         run: |
           if [ "${{ matrix.manager_type }}" == "spoofed" ]; then
@@ -152,13 +152,13 @@ jobs:
             echo "title=Manager" >> $GITHUB_OUTPUT
           fi
 
-      - name: Run randomizer
+      - name: 运行随机化器 (Randomizer)
         if: ${{ matrix.manager_type == 'spoofed' }}
         run: |
           chmod +x randomizer
           ./randomizer
 
-      - name: Write key
+      - name: 写入密钥 (Write key)
         if: ${{ github.event_name == 'workflow_dispatch' || ( github.event_name != 'pull_request') || github.ref_type == 'tag' }}
         run: |
           if [ ! -z "${{ secrets.KEYSTORE }}" ]; then
@@ -171,7 +171,7 @@ jobs:
             echo "${{ secrets.KEYSTORE }}" | base64 -d > key.jks
           fi
 
-      - name: Write PR key
+      - name: 写入 PR 密钥 (Write PR key)
         if: github.event_name == 'pull_request'
         env:
           PR_KEYSTORE: ${{ needs.generate-key.outputs.keystore }}
@@ -186,19 +186,19 @@ jobs:
             echo KEYSTORE_FILE='pr-key.jks'
           } >> gradle.properties
       
-      - name: Setup Java
+      - name: 设置 Java 环境
         uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: 21
 
-      - name: Setup Gradle
+      - name: 设置 Gradle
         uses: gradle/actions/setup-gradle@v6
 
-      - name: Setup Android SDK
+      - name: 设置 Android SDK
         uses: android-actions/setup-android@v4
 
-      - name: Build APK
+      - name: 构建 APK
         run: |
           if [ "${{ github.event_name }}" == "pull_request" ]; then
             ./gradlew assemble${{ matrix.build_type }} -Pcommit=${{ steps.commit.outputs.COMMIT_SHA }} -PIS_PR_BUILD=true
@@ -206,7 +206,7 @@ jobs:
             ./gradlew assemble${{ matrix.build_type }} -Pcommit=${{ steps.commit.outputs.COMMIT_SHA }}
           fi
 
-      - name: Upload artifact
+      - name: 上传产物 (Upload artifact)
         uses: actions/upload-artifact@v7
         with:
           name: ${{ steps.determine.outputs.title }}-gradle-${{ matrix.build_type }}
@@ -230,12 +230,12 @@ jobs:
           - manager_type: "normal"
             build_type: "debug"
     steps:
-      - name: Checkout
+      - name: 检出代码
         uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
-      - name: Determine manager variant
+      - name: 确定管理器变体
         id: determine
         run: |
           if [ "${{ matrix.manager_type }}" == "spoofed" ]; then
@@ -244,31 +244,31 @@ jobs:
             echo "title=Manager" >> $GITHUB_OUTPUT
           fi
 
-      - name: Download artifact
+      - name: 下载产物 (Download artifact)
         uses: actions/download-artifact@v8
         with:
             name: ${{ steps.determine.outputs.title }}-gradle-${{ matrix.build_type }}
             path: artifacts/${{ steps.determine.outputs.title }}-gradle-${{ matrix.build_type }}
       
-      - name: Download arm64 ksud
+      - name: 下载 arm64 ksud
         uses: actions/download-artifact@v8
         with:
           name: ksud-aarch64-linux-android
           path: artifacts/ksud-aarch64-linux-android
 
-      - name: Download x86_64 ksud
+      - name: 下载 x86_64 ksud
         uses: actions/download-artifact@v8
         with:
           name: ksud-x86_64-linux-android
           path: artifacts/ksud-x86_64-linux-android
 
-      - name: Download arm ksud
+      - name: 下载 arm ksud
         uses: actions/download-artifact@v8
         with:
           name: ksud-armv7-linux-androideabi
           path: artifacts/ksud-armv7-linux-androideabi
 
-      - name: Place manager apk and ksud artifacts
+      - name: 放置管理器 APK 和 ksud 产物
         run: |
           mkdir -p manager/app/build/outputs/apk/${{ matrix.build_type }}
           APKS=$(find artifacts/${{ steps.determine.outputs.title }}-gradle-${{ matrix.build_type }} -type f -name "*.apk")
@@ -289,7 +289,7 @@ jobs:
           cp -f "$ARMV7_KSUD" target/armv7-linux-androideabi/release/ksud
           cp -f "$X86_64_KSUD" target/x86_64-linux-android/release/ksud
 
-      - name: Prepare signing inputs
+      - name: 准备签名输入
         if: ${{ github.event_name == 'pull_request' || (github.event_name != 'pull_request' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/ci')) || github.ref_type == 'tag' }}
         env:
           PR_KEYSTORE: ${{ needs.generate-key.outputs.keystore }}
@@ -315,7 +315,7 @@ jobs:
             echo "SIGN_KEY_PASSWORD=$PROD_KEY_PASSWORD" >> $GITHUB_ENV
           fi
 
-      - name: Repack and resign
+      - name: 重新打包并签名 (Repack and resign)
         if: ${{ github.event_name == 'pull_request' || (github.event_name != 'pull_request' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/ci')) || github.ref_type == 'tag' }}
         run: |
           python3 repack_apk_multi.py repack \
@@ -330,7 +330,7 @@ jobs:
             -S "$SIGN_KEY_PASSWORD" \
             --strip
 
-      - name: Upload build artifact
+      - name: 上传构建产物 (Upload build artifact)
         if: ${{ github.event_name == 'pull_request' || (github.event_name != 'pull_request' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/ci')) || github.ref_type == 'tag' }}
         uses: actions/upload-artifact@v7
         with:
@@ -345,11 +345,11 @@ jobs:
       matrix:
         manager_type: [ "spoofed", "normal" ]
     steps:
-      - name: Checkout
+      - name: 检出代码
         uses: actions/checkout@v6
         with:
           fetch-depth: 0
-      - name: Setup need_upload
+      - name: 设置是否需要上传 (Setup need_upload)
         id: need_upload
         run: |
           if [ ! -z "${{ secrets.BOT_TOKEN }}" ]; then
@@ -358,7 +358,7 @@ jobs:
             echo "UPLOAD=false" >> $GITHUB_OUTPUT
           fi
 
-      - name: Determine manager variant
+      - name: 确定管理器变体
         id: determine
         run: |
           if [ "${{ matrix.manager_type }}" == "spoofed" ]; then
@@ -369,20 +369,20 @@ jobs:
             echo "topicid=${{ vars.MESSAGE_THREAD_ID }}" >> $GITHUB_OUTPUT
           fi
         
-      - name: Download Debug artifact
+      - name: 下载 Debug 产物
         if: ${{ matrix.manager_type != 'spoofed' }}
         uses: actions/download-artifact@v8
         with:
           name: ${{ steps.determine.outputs.title }}-debug
           path: ./apk/debug
 
-      - name: Download Release artifact
+      - name: 下载 Release 产物
         uses: actions/download-artifact@v8
         with:
           name: ${{ steps.determine.outputs.title }}-release
           path: ./apk/release
 
-      - name: Upload to Telegram
+      - name: 上传到 Telegram
         if: steps.need_upload.outputs.UPLOAD == 'true'
         env:
           CHAT_ID: ${{ vars.CHAT_ID }}

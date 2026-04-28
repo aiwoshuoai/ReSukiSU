@@ -1,4 +1,4 @@
-name: Build ksuinit
+name: 构建 ksuinit
 on:
   workflow_call:
     inputs:
@@ -14,7 +14,7 @@ jobs:
       with:
         fetch-depth: 0
         
-    - name: Setup rustup
+    - name: 设置 rustup (Setup rustup)
       run: |
         rustup update stable
         rustup target add aarch64-unknown-linux-musl
@@ -24,7 +24,7 @@ jobs:
         workspaces: userspace/ksuinit
         cache-targets: false
 
-    - name: Build ksuinit
+    - name: 构建 ksuinit (Build ksuinit)
       run: |
         LLVM_BIN=$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin
         export CARGO_TARGET_AARCH64_UNKNOWN_LINUX_MUSL_LINKER="$LLVM_BIN/aarch64-linux-android26-clang"
@@ -32,7 +32,7 @@ jobs:
         cd userspace/ksuinit
         cargo build --target=aarch64-unknown-linux-musl --release
 
-    - name: Upload ksuinit artifact
+    - name: 上传 ksuinit 产物 (Upload ksuinit artifact)
       uses: actions/upload-artifact@v7
       with:
         name: ksuinit

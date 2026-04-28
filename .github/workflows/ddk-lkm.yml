@@ -1,4 +1,4 @@
-name: Build KernelSU Kernel Module
+name: 构建 KernelSU 内核模块 (LKM)
 
 on:
   workflow_call:
@@ -33,10 +33,10 @@ jobs:
       options: --privileged
 
     steps:
-    - name: Checkout source code
+    - name: 检出源码 (Checkout source code)
       uses: actions/checkout@v6
 
-    - name: Build kernelsu.ko
+    - name: 构建 kernelsu.ko (Build kernelsu.ko)
       env:
         EXPECTED_PR_BUILD_SIZE: ${{ inputs.expected_pr_build_size }}
         EXPECTED_PR_BUILD_HASH: ${{ inputs.expected_pr_build_hash }}
@@ -74,7 +74,7 @@ jobs:
         llvm-strip -d "/github/workspace/out/$OUTPUT_NAME"
         echo "Size after stripping: $(du -h "/github/workspace/out/$OUTPUT_NAME" | cut -f1)"
         
-    - name: Upload kernelsu.ko artifact
+    - name: 上传 kernelsu.ko 产物 (Upload kernelsu.ko artifact)
       uses: actions/upload-artifact@v7
       with:
         name: ${{ inputs.kmi }}-lkm
