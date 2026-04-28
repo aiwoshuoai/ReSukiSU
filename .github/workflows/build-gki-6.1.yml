@@ -502,12 +502,23 @@ jobs:
           echo "export KBUILD_BUILD_TIMESTAMP=\"$K_TIME\"" >> ${{ env.KERNEL_ROOT }}/common/.config || true
 
       - name: 开始全量编译
-        env:
-          KBUILD_BUILD_TIMESTAMP: ${{ env.KBUILD_BUILD_TIMESTAMP }}
+        working-directory: ${{ env.KERNEL_ROOT }}
         run: |
-          echo "使用时间戳: $KBUILD_BUILD_TIMESTAMP 进行编译..."
-          # 此处为您的编译指令示例
-          # BUILD_CONFIG=common/build.config.gki.aarch64 build/build.sh
+          echo "================================================="
+          echo "🚀 启动 GKI 内核全量编译..."
+          echo "📅 编译时间戳: $KBUILD_BUILD_TIMESTAMP"
+          echo "================================================="
+          
+          # 设置编译器路径 (指向我们升级后的 Clang)
+          DEFAULT_CLANG_DIR=$(ls -d prebuilts/clang/host/linux-x86/clang-r* | head -n 1)
+          export PATH="$GITHUB_WORKSPACE/${{ env.KERNEL_ROOT }}/$DEFAULT_CLANG_DIR/bin:$PATH"
+          
+          # 执行 GKI 标准编译指令
+          # 注意：这里假设您的源码树包含 build/ 目录及其脚本
+          # 如果您的环境不同，请根据实际情况调整 BUILD_CONFIG 路径
+          LTO=thin BUILD_CONFIG=common/build.config.gki.aarch64 build/build.sh
+          
+          echo "✅ 编译流程执行完毕！"
 
       - name: 收集补丁冲突文件
         if: always()
