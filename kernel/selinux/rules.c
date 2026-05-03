@@ -93,8 +93,6 @@ DEFINE_MUTEX(ksu_sel_mutex);
 // handle backport
 #ifdef KSU_COMPAT_HAS_EXPORTED_POLICY_RWLOCK
 extern rwlock_t policy_rwlock;
-#else
-DEFINE_RWLOCK(ksu_rules);
 #endif
 
 #endif // #ifndef KSU_COMPAT_USE_SELINUX_STATE
@@ -140,7 +138,7 @@ static inline void ksu_lock_sepolicy_legacy(void)
     write_lock_irq(&policy_rwlock);
 // 4.14- mostly
 #else
-    write_lock_irq(&ksu_rules);
+    // do nothing
 #endif
 }
 
@@ -154,8 +152,7 @@ static inline void ksu_unlock_sepolicy_legacy(void)
     write_unlock_irq(&policy_rwlock);
 // 4.14- mostly
 #else
-    write_unlock_irq(&ksu_rules);
-    preempt_enable();
+    // do nothing
 #endif
 }
 
