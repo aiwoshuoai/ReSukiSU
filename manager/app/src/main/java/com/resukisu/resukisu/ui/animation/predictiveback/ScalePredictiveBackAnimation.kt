@@ -136,7 +136,13 @@ class ScalePredictiveBackAnimation(
                         translationX = animatedTranslationX
                         transformOrigin = TransformOrigin(currentPivotX, currentPivotY)
                     }
-                    .clip(RoundedCornerShape(deviceCornerRadius))
+                    .then(
+                        if (transitionState is InProgress) {
+                            Modifier.clip(RoundedCornerShape(deviceCornerRadius))
+                        } else {
+                            Modifier
+                        }
+                    )
 
                 modifier
             } else {

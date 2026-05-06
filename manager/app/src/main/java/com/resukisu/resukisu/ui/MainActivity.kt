@@ -495,11 +495,17 @@ class MainActivity : ComponentActivity() {
                                         val snackBarHostState = remember { SnackbarHostState() }
                                         with(predictiveBackAnimationHandler) {
                                             Box(
-                                                modifier = Modifier.predictiveBackAnimationDecorator(
-                                                    gestureState?.transitionState,
-                                                    content.contentKey,
-                                                    navigator.current()
-                                                )
+                                                modifier = Modifier
+                                                    .predictiveBackAnimationDecorator(
+                                                        gestureState?.transitionState,
+                                                        content.contentKey,
+                                                        navigator.current()
+                                                    )
+                                                    .then(
+                                                        if (!ThemeConfig.backgroundImageLoaded) Modifier.background(
+                                                            MaterialTheme.colorScheme.surfaceContainer
+                                                        ) else Modifier
+                                                    )
                                             ) {
                                                 val surfaceContainer =
                                                     MaterialTheme.colorScheme.surfaceContainer
@@ -510,9 +516,9 @@ class MainActivity : ComponentActivity() {
                                                     ),
                                                     LocalSnackbarHost provides snackBarHostState,
                                                 ) {
-                                                    Box(
-                                                        modifier = backgroundImagePainter?.let {
-                                                            Modifier
+                                                    backgroundImagePainter?.let {
+                                                        Box(
+                                                            modifier = Modifier
                                                                 .fillMaxSize()
                                                                 .zIndex(-1f)
                                                                 .paint(
@@ -527,9 +533,8 @@ class MainActivity : ComponentActivity() {
                                                                         )
                                                                     )
                                                                 }
-                                                        }
-                                                            ?: Modifier.background(MaterialTheme.colorScheme.surfaceContainer)
-                                                    )
+                                                        )
+                                                    }
                                                     content.Content()
                                                 }
                                             }
